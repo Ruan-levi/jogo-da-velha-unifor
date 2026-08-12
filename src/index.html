@@ -4,24 +4,19 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Jogo da Velha - UNIFOR</title>
-    <!-- Importação do Canvas Confetti via CDN -->
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     <style>
-        /* Variáveis de Cores UNIFOR */
         :root {
             --azul-unifor: #003366;
             --azul-destaque: #0056b3;
             --laranja-unifor: #d97706;
             --fundo-claro: #f4f6f9;
-            --celula-bg: #ffffff;
-            --celula-border: #cccccc;
-            --texto-escuro: #333333;
         }
 
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: var(--fundo-claro);
-            color: var(--texto-escuro);
+            background: linear-gradient(135deg, var(--fundo-claro) 0%, #e2e8f0 100%);
+            color: #333;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -32,152 +27,196 @@
 
         header {
             text-align: center;
-            margin-bottom: 20px;
+            margin-bottom: 25px;
+            background: white;
+            padding: 20px 40px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            border-bottom: 4px solid var(--laranja-unifor);
         }
 
         #ui-01-subtitle {
             color: var(--azul-destaque);
-            font-size: 1rem;
-            font-weight: bold;
-            letter-spacing: 2px;
+            font-size: 0.9rem;
+            font-weight: 800;
+            letter-spacing: 3px;
             margin: 0;
         }
 
         #ui-02-title {
             color: var(--azul-unifor);
-            font-size: 2.5rem;
-            margin: 5px 0 20px 0;
+            font-size: 2.2rem;
+            margin: 5px 0 0 0;
+            font-weight: 900;
         }
 
         .controls {
             display: flex;
-            gap: 20px;
+            gap: 15px;
             margin-bottom: 20px;
         }
 
         select {
-            padding: 10px;
+            padding: 12px;
             font-size: 1rem;
+            font-weight: bold;
             border: 2px solid var(--azul-unifor);
-            border-radius: 5px;
+            border-radius: 8px;
             background-color: white;
             color: var(--azul-unifor);
             cursor: pointer;
             outline: none;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            transition: all 0.3s;
+        }
+
+        select:hover {
+            border-color: var(--azul-destaque);
         }
 
         .scoreboard {
             display: flex;
-            justify-content: space-between;
+            justify-content: space-around;
             align-items: center;
             width: 100%;
-            max-width: 400px;
+            max-width: 450px;
             background-color: white;
-            padding: 15px 20px;
-            border-radius: 10px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-            margin-bottom: 20px;
-            box-sizing: border-box;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.08);
+            margin-bottom: 25px;
+            border-top: 4px solid var(--azul-unifor);
         }
 
         .player-score {
             text-align: center;
-            font-size: 1.2rem;
+            font-size: 1.1rem;
             font-weight: bold;
+            display: flex;
+            flex-direction: column;
         }
 
         .player-x { color: var(--azul-unifor); }
         .player-o { color: var(--laranja-unifor); }
 
         .score-value {
-            font-size: 1.5rem;
-            display: block;
+            font-size: 2rem;
+            font-weight: 900;
             margin-top: 5px;
         }
 
         .round-info {
             text-align: center;
-            font-weight: bold;
-            color: var(--texto-escuro);
+            font-weight: 800;
+            color: #666;
+            font-size: 0.9rem;
+            background: var(--fundo-claro);
+            padding: 10px 20px;
+            border-radius: 8px;
+        }
+
+        #ui-06-round {
+            font-size: 1.2rem;
+            color: var(--azul-unifor);
+            display: block;
+            margin-top: 3px;
         }
 
         #ui-08-status {
-            font-size: 1.5rem;
-            font-weight: bold;
+            font-size: 1.4rem;
+            font-weight: 800;
             margin-bottom: 20px;
             height: 30px;
             color: var(--azul-unifor);
+            text-transform: uppercase;
+            letter-spacing: 1px;
         }
 
         .board-container {
             position: relative;
-            width: 320px;
-            height: 320px;
+            width: 340px;
+            height: 340px;
         }
 
         .board {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
             grid-template-rows: repeat(3, 1fr);
-            gap: 5px;
+            gap: 8px;
             width: 100%;
             height: 100%;
             background-color: var(--azul-unifor);
-            padding: 5px;
-            border-radius: 10px;
+            padding: 8px;
+            border-radius: 12px;
+            box-shadow: 0 8px 25px rgba(0,51,102,0.2);
             box-sizing: border-box;
         }
 
         .cell {
-            background-color: var(--celula-bg);
+            background-color: white;
             border: none;
-            font-size: 4rem;
-            font-weight: bold;
+            border-radius: 6px;
+            font-size: 4.5rem;
+            font-weight: 900;
             cursor: pointer;
             display: flex;
             justify-content: center;
             align-items: center;
-            transition: background-color 0.2s;
+            transition: all 0.2s ease-in-out;
             padding: 0;
             margin: 0;
-            color: var(--texto-escuro); /* Cor padrão, será sobrescrita no JS */
         }
 
         .cell:hover:not(:disabled) {
-            background-color: #e9ecef;
+            background-color: #f0f4f8;
+            transform: scale(0.98);
         }
 
-        .cell:disabled {
-            cursor: default;
-        }
-
-        /* Linha de Vitória */
         #ui-10-win-line {
             position: absolute;
-            background-color: #28a745; /* Verde para destacar a vitória */
+            background-color: #28a745;
             z-index: 10;
             opacity: 0;
             pointer-events: none;
-            transition: opacity 0.3s ease;
+            transition: opacity 0.4s ease, transform 0.4s ease;
             transform-origin: center;
+            border-radius: 10px;
+            box-shadow: 0 0 15px rgba(40,167,69,0.6);
+        }
+
+        .btn-action {
+            margin-top: 25px;
+            padding: 15px 30px;
+            font-size: 1.1rem;
+            font-weight: 800;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            letter-spacing: 1px;
         }
 
         #ui-11-btn-reset {
-            margin-top: 30px;
-            padding: 12px 24px;
-            font-size: 1.1rem;
-            font-weight: bold;
-            color: white;
             background-color: var(--azul-unifor);
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: background-color 0.3s;
         }
 
         #ui-11-btn-reset:hover {
             background-color: var(--azul-destaque);
+            transform: translateY(-2px);
         }
+
+        #ui-12-btn-next {
+            background-color: var(--laranja-unifor);
+            display: none;
+        }
+
+        #ui-12-btn-next:hover {
+            background-color: #b56305;
+            transform: translateY(-2px);
+        }
+
     </style>
 </head>
 <body>
@@ -204,7 +243,7 @@
             <span id="ui-05-score-x" class="score-value">0</span>
         </div>
         <div class="round-info">
-            RODADA<br>
+            RODADA
             <span id="ui-06-round">1/1</span>
         </div>
         <div class="player-score player-o">
@@ -230,10 +269,10 @@
         <div id="ui-10-win-line"></div>
     </div>
 
-    <button id="ui-11-btn-reset">REINICIAR JOGO</button>
+    <button id="ui-11-btn-reset" class="btn-action">REINICIAR JOGO</button>
+    <button id="ui-12-btn-next" class="btn-action">PRÓXIMA RODADA ➔</button>
 
     <script>
-        // --- Estrutura de Estado (Dicionário de Dados) ---
         let options = ['', '', '', '', '', '', '', '', ''];
         let currentPlayer = 'X';
         let running = false;
@@ -241,10 +280,10 @@
         let winsO = 0;
         let currentRound = 1;
         
-        // Elementos da UI
         const cells = document.querySelectorAll('.cell');
         const statusText = document.getElementById('ui-08-status');
         const btnReset = document.getElementById('ui-11-btn-reset');
+        const btnNext = document.getElementById('ui-12-btn-next');
         const modeSelect = document.getElementById('ui-03-mode');
         const formatSelect = document.getElementById('ui-04-format');
         const scoreXText = document.getElementById('ui-05-score-x');
@@ -252,62 +291,66 @@
         const roundText = document.getElementById('ui-06-round');
         const labelPlayerO = document.getElementById('label-player-o');
         const winLine = document.getElementById('ui-10-win-line');
-        const boardElement = document.getElementById('board');
 
-        // Padrões de Vitória
         const winPatterns = [
-            [0, 1, 2], [3, 4, 5], [6, 7, 8], // Linhas
-            [0, 3, 6], [1, 4, 7], [2, 5, 8], // Colunas
-            [0, 4, 8], [2, 4, 6]             // Diagonais
+            [0, 1, 2], [3, 4, 5], [6, 7, 8],
+            [0, 3, 6], [1, 4, 7], [2, 5, 8],
+            [0, 4, 8], [2, 4, 6]
         ];
 
-        // --- Sintetizador de Áudio (Web Audio API) ---
         const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 
         function playSound(type) {
-            if (audioCtx.state === 'suspended') {
-                audioCtx.resume();
-            }
+            if (audioCtx.state === 'suspended') audioCtx.resume();
+            
             const osc = audioCtx.createOscillator();
             const gainNode = audioCtx.createGain();
             osc.connect(gainNode);
             gainNode.connect(audioCtx.destination);
 
+            const now = audioCtx.currentTime;
+
             if (type === 'X') {
-                osc.type = 'sine';
-                osc.frequency.setValueAtTime(440, audioCtx.currentTime); // A4
-                gainNode.gain.setValueAtTime(0.1, audioCtx.currentTime);
-                osc.start();
-                osc.stop(audioCtx.currentTime + 0.1);
+                osc.type = 'triangle';
+                osc.frequency.setValueAtTime(600, now);
+                osc.frequency.exponentialRampToValueAtTime(800, now + 0.1);
+                gainNode.gain.setValueAtTime(0.3, now);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, now + 0.1);
+                osc.start(now);
+                osc.stop(now + 0.1);
             } else if (type === 'O') {
                 osc.type = 'sine';
-                osc.frequency.setValueAtTime(330, audioCtx.currentTime); // E4
-                gainNode.gain.setValueAtTime(0.1, audioCtx.currentTime);
-                osc.start();
-                osc.stop(audioCtx.currentTime + 0.1);
+                osc.frequency.setValueAtTime(400, now);
+                osc.frequency.exponentialRampToValueAtTime(200, now + 0.15);
+                gainNode.gain.setValueAtTime(0.3, now);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, now + 0.15);
+                osc.start(now);
+                osc.stop(now + 0.15);
             } else if (type === 'win') {
-                osc.type = 'triangle';
-                osc.frequency.setValueAtTime(523.25, audioCtx.currentTime); // C5
-                osc.frequency.exponentialRampToValueAtTime(880, audioCtx.currentTime + 0.3); // Sobe para A5
-                gainNode.gain.setValueAtTime(0.2, audioCtx.currentTime);
-                gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.5);
-                osc.start();
-                osc.stop(audioCtx.currentTime + 0.5);
+                osc.type = 'square';
+                osc.frequency.setValueAtTime(440, now);
+                osc.frequency.setValueAtTime(554.37, now + 0.1);
+                osc.frequency.setValueAtTime(659.25, now + 0.2);
+                osc.frequency.setValueAtTime(880, now + 0.3);
+                gainNode.gain.setValueAtTime(0.1, now);
+                gainNode.gain.linearRampToValueAtTime(0, now + 0.6);
+                osc.start(now);
+                osc.stop(now + 0.6);
             } else if (type === 'draw') {
                 osc.type = 'sawtooth';
-                osc.frequency.setValueAtTime(300, audioCtx.currentTime);
-                osc.frequency.exponentialRampToValueAtTime(150, audioCtx.currentTime + 0.4); // Desce
-                gainNode.gain.setValueAtTime(0.1, audioCtx.currentTime);
-                gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.4);
-                osc.start();
-                osc.stop(audioCtx.currentTime + 0.4);
+                osc.frequency.setValueAtTime(300, now);
+                osc.frequency.exponentialRampToValueAtTime(100, now + 0.5);
+                gainNode.gain.setValueAtTime(0.1, now);
+                gainNode.gain.linearRampToValueAtTime(0, now + 0.5);
+                osc.start(now);
+                osc.stop(now + 0.5);
             }
         }
 
-        // --- Lógica Principal ---
         function initializeGame() {
             cells.forEach(cell => cell.addEventListener('click', cellClicked));
             btnReset.addEventListener('click', fullReset);
+            btnNext.addEventListener('click', startNextRound);
             modeSelect.addEventListener('change', handleConfigChange);
             formatSelect.addEventListener('change', handleConfigChange);
             updateUI();
@@ -316,20 +359,15 @@
 
         function cellClicked(e) {
             const cellIndex = e.target.getAttribute('data-index');
-
-            if (options[cellIndex] !== '' || !running) {
-                return;
-            }
+            if (options[cellIndex] !== '' || !running) return;
             
-            // Turno do Jogador Humano
             updateCell(e.target, cellIndex);
             checkWinner();
 
-            // Turno da CPU (se aplicável e o jogo ainda estiver rolando)
             if (running && modeSelect.value === 'cpu' && currentPlayer === 'O') {
-                running = false; // Bloqueia cliques temporariamente
-                statusText.textContent = "Computador pensando...";
-                setTimeout(cpuMove, 400); // 400ms de atraso
+                running = false;
+                statusText.textContent = "COMPUTADOR PENSANDO...";
+                setTimeout(cpuMove, 500);
             }
         }
 
@@ -342,27 +380,22 @@
 
         function changePlayer() {
             currentPlayer = currentPlayer === 'X' ? 'O' : 'X';
-            
             let nomeO = modeSelect.value === 'cpu' ? "Computador" : "Jogador O";
             let nomeAtual = currentPlayer === 'X' ? "Jogador X" : nomeO;
-            
-            statusText.textContent = `Vez do ${nomeAtual}`;
+            statusText.textContent = `VEZ DO ${nomeAtual}`;
         }
 
         function cpuMove() {
             let availableCells = [];
-            options.forEach((val, idx) => {
-                if (val === '') availableCells.push(idx);
-            });
+            options.forEach((val, idx) => { if (val === '') availableCells.push(idx); });
 
             if (availableCells.length > 0) {
-                // Jogada aleatória simples para a CPU
                 const randomIdx = Math.floor(Math.random() * availableCells.length);
                 const cellIndex = availableCells[randomIdx];
                 const cellElement = document.querySelector(`.cell[data-index="${cellIndex}"]`);
                 
                 updateCell(cellElement, cellIndex);
-                running = true; // Libera cliques novamente
+                running = true;
                 checkWinner();
             }
         }
@@ -373,14 +406,8 @@
 
             for (let i = 0; i < winPatterns.length; i++) {
                 const condition = winPatterns[i];
-                const cellA = options[condition[0]];
-                const cellB = options[condition[1]];
-                const cellC = options[condition[2]];
-
-                if (cellA === '' || cellB === '' || cellC === '') {
-                    continue;
-                }
-                if (cellA === cellB && cellB === cellC) {
+                const [a, b, c] = condition;
+                if (options[a] && options[a] === options[b] && options[a] === options[c]) {
                     roundWon = true;
                     winningCondition = condition;
                     break;
@@ -397,53 +424,34 @@
         }
 
         function drawWinLine(condition) {
-            // Calcula a posição e rotação da linha baseada nos índices vencedores
             const [a, b, c] = condition;
-            
-            // Tamanho de uma célula (incluindo gap aprox)
-            const cellSize = 100; 
-            const gap = 5;
-            const totalSize = 310; // largura do grid
-            
             winLine.style.opacity = '1';
-            winLine.style.height = '6px';
-            winLine.style.width = '280px'; // Tamanho base
+            winLine.style.height = '8px';
+            winLine.style.width = '300px';
             
-            // Define posições baseadas no tipo de vitória
-            if (a === 0 && c === 2) { // Linha 1
-                winLine.style.top = '16%'; winLine.style.left = '5%'; winLine.style.transform = 'rotate(0deg)';
-            } else if (a === 3 && c === 5) { // Linha 2
-                winLine.style.top = '50%'; winLine.style.left = '5%'; winLine.style.transform = 'rotate(0deg)';
-            } else if (a === 6 && c === 8) { // Linha 3
-                winLine.style.top = '84%'; winLine.style.left = '5%'; winLine.style.transform = 'rotate(0deg)';
-            } else if (a === 0 && c === 6) { // Col 1
-                winLine.style.top = '50%'; winLine.style.left = '-38%'; winLine.style.transform = 'rotate(90deg)';
-            } else if (a === 1 && c === 7) { // Col 2
-                winLine.style.top = '50%'; winLine.style.left = '5%'; winLine.style.transform = 'rotate(90deg)';
-            } else if (a === 2 && c === 8) { // Col 3
-                winLine.style.top = '50%'; winLine.style.left = '48%'; winLine.style.transform = 'rotate(90deg)';
-            } else if (a === 0 && c === 8) { // Diagonal 1
-                winLine.style.width = '380px';
-                winLine.style.top = '50%'; winLine.style.left = '-10%'; winLine.style.transform = 'rotate(45deg)';
-            } else if (a === 2 && c === 6) { // Diagonal 2
-                winLine.style.width = '380px';
-                winLine.style.top = '50%'; winLine.style.left = '-10%'; winLine.style.transform = 'rotate(-45deg)';
-            }
+            if (a === 0 && c === 2) { winLine.style.top = '16%'; winLine.style.left = '6%'; winLine.style.transform = 'rotate(0deg)'; }
+            else if (a === 3 && c === 5) { winLine.style.top = '49%'; winLine.style.left = '6%'; winLine.style.transform = 'rotate(0deg)'; }
+            else if (a === 6 && c === 8) { winLine.style.top = '82%'; winLine.style.left = '6%'; winLine.style.transform = 'rotate(0deg)'; }
+            else if (a === 0 && c === 6) { winLine.style.top = '49%'; winLine.style.left = '-38%'; winLine.style.transform = 'rotate(90deg)'; }
+            else if (a === 1 && c === 7) { winLine.style.top = '49%'; winLine.style.left = '6%'; winLine.style.transform = 'rotate(90deg)'; }
+            else if (a === 2 && c === 8) { winLine.style.top = '49%'; winLine.style.left = '49%'; winLine.style.transform = 'rotate(90deg)'; }
+            else if (a === 0 && c === 8) { winLine.style.width = '420px'; winLine.style.top = '49%'; winLine.style.left = '-12%'; winLine.style.transform = 'rotate(45deg)'; }
+            else if (a === 2 && c === 6) { winLine.style.width = '420px'; winLine.style.top = '49%'; winLine.style.left = '-12%'; winLine.style.transform = 'rotate(-45deg)'; }
         }
 
         function handleWin(condition) {
-            running = false; // Bloqueia cliques
+            running = false;
             drawWinLine(condition);
             playSound('win');
-            confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 } });
+            confetti({ particleCount: 200, spread: 90, origin: { y: 0.6 }, colors: ['#003366', '#0056b3', '#d97706'] });
 
             if (currentPlayer === 'X') {
                 winsX++;
-                statusText.textContent = "Jogador X Venceu a Rodada!";
+                statusText.textContent = "JOGADOR X VENCEU A RODADA!";
             } else {
                 winsO++;
-                let nome = modeSelect.value === 'cpu' ? "Computador" : "Jogador O";
-                statusText.textContent = `${nome} Venceu a Rodada!`;
+                let nome = modeSelect.value === 'cpu' ? "COMPUTADOR" : "JOGADOR O";
+                statusText.textContent = `${nome} VENCEU A RODADA!`;
             }
             
             updateScoreUI();
@@ -453,12 +461,8 @@
         function handleDraw() {
             running = false;
             playSound('draw');
-            statusText.textContent = "Rodada Empatada!";
-            
-            const format = formatSelect.value;
-            if (format === 'bo3' && currentRound < 3 && winsX < 2 && winsO < 2) {
-                setTimeout(resetRoundOnly, 2000);
-            }
+            statusText.textContent = "RODADA EMPATADA!";
+            checkMatchEnd();
         }
 
         function checkMatchEnd() {
@@ -471,30 +475,31 @@
                     let nome = modeSelect.value === 'cpu' ? "COMPUTADOR" : "JOGADOR O";
                     statusText.textContent = `🏆 ${nome} CAMPEÃO (MD3)!`;
                 } else if (currentRound < 3) {
-                    // Avança rodada
-                    currentRound++;
-                    setTimeout(resetRoundOnly, 2000);
+                    btnReset.style.display = 'none';
+                    btnNext.style.display = 'inline-block';
                 } else {
-                    // Fim da 3a rodada sem 2 vitorias
                     if (winsX > winsO) statusText.textContent = "🏆 JOGADOR X CAMPEÃO (MD3)!";
                     else if (winsO > winsX) {
                         let nome = modeSelect.value === 'cpu' ? "COMPUTADOR" : "JOGADOR O";
                         statusText.textContent = `🏆 ${nome} CAMPEÃO (MD3)!`;
                     }
-                    else statusText.textContent = "Partida Empatada!";
+                    else statusText.textContent = "PARTIDA EMPATADA!";
                 }
-            } else {
-                // Partida Única, já tratou a vitoria, apenas para
             }
         }
 
-        function resetRoundOnly() {
+        function startNextRound() {
+            currentRound++;
+            btnNext.style.display = 'none';
+            btnReset.style.display = 'inline-block';
+            resetBoard();
+        }
+
+        function resetBoard() {
             options = ['', '', '', '', '', '', '', '', ''];
             currentPlayer = 'X';
             winLine.style.opacity = '0';
-            cells.forEach(cell => {
-                cell.textContent = '';
-            });
+            cells.forEach(cell => cell.textContent = '');
             updateUI();
             running = true;
         }
@@ -503,29 +508,28 @@
             winsX = 0;
             winsO = 0;
             currentRound = 1;
-            resetRoundOnly();
+            btnNext.style.display = 'none';
+            btnReset.style.display = 'inline-block';
+            resetBoard();
         }
 
         function handleConfigChange() {
             labelPlayerO.textContent = modeSelect.value === 'cpu' ? "COMPUTADOR" : "JOGADOR O";
-            fullReset(); // Ao mudar config, reseta tudo
+            fullReset();
         }
 
         function updateUI() {
             scoreXText.textContent = winsX;
             scoreOText.textContent = winsO;
-            
-            const format = formatSelect.value;
-            if (format === 'bo3') {
-                roundText.textContent = `${currentRound}/3`;
-            } else {
-                roundText.textContent = `1/1`;
-            }
-
-            statusText.textContent = `Vez do Jogador X`;
+            roundText.textContent = formatSelect.value === 'bo3' ? `${currentRound}/3` : `1/1`;
+            statusText.textContent = `VEZ DO JOGADOR X`;
         }
 
-        // Inicia o Jogo
+        function updateScoreUI() {
+            scoreXText.textContent = winsX;
+            scoreOText.textContent = winsO;
+        }
+
         initializeGame();
 
     </script>
