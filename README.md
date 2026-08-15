@@ -1,6 +1,6 @@
 # jogo-da-velha-unifor
 
-### Feito por: Ruan Levi Ferreira Macedo
+### Feito por: Ruan Levi Ferreira Macedo, Lorhan Dejan Ferreira Macedo, Hiago Queiroz Barreto
 ### Matricula: 2612705
 
 ## Acesse o jogo no link abaixo:
