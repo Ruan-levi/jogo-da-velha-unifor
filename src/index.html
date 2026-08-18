@@ -70,7 +70,13 @@
             transition: all 0.3s;
         }
 
-        select:hover {
+        select:disabled {
+            background-color: #e9ecef;
+            cursor: not-allowed;
+            opacity: 0.7;
+        }
+
+        select:hover:not(:disabled) {
             border-color: var(--azul-destaque);
         }
 
@@ -216,7 +222,6 @@
             background-color: #b56305;
             transform: translateY(-2px);
         }
-
     </style>
 </head>
 <body>
@@ -234,6 +239,10 @@
         <select id="ui-04-format">
             <option value="single">Partida Única</option>
             <option value="bo3">Melhor de 3 (MD3)</option>
+        </select>
+        <select id="ui-09-first-player">
+            <option value="X">Começa: Jogador X</option>
+            <option value="O">Começa: Jogador O</option>
         </select>
     </div>
 
@@ -275,6 +284,8 @@
     <script>
         let options = ['', '', '', '', '', '', '', '', ''];
         let currentPlayer = 'X';
+        let startingPlayer = 'X';
+        let matchStartingPlayer = 'X';
         let running = false;
         let winsX = 0;
         let winsO = 0;
@@ -286,6 +297,7 @@
         const btnNext = document.getElementById('ui-12-btn-next');
         const modeSelect = document.getElementById('ui-03-mode');
         const formatSelect = document.getElementById('ui-04-format');
+        const firstPlayerSelect = document.getElementById('ui-09-first-player');
         const scoreXText = document.getElementById('ui-05-score-x');
         const scoreOText = document.getElementById('ui-07-score-o');
         const roundText = document.getElementById('ui-06-round');
@@ -353,14 +365,21 @@
             btnNext.addEventListener('click', startNextRound);
             modeSelect.addEventListener('change', handleConfigChange);
             formatSelect.addEventListener('change', handleConfigChange);
-            updateUI();
-            running = true;
+            firstPlayerSelect.addEventListener('change', handleConfigChange);
+            fullReset();
+        }
+
+        function setSelectsDisabled(disabled) {
+            modeSelect.disabled = disabled;
+            formatSelect.disabled = disabled;
+            firstPlayerSelect.disabled = disabled;
         }
 
         function cellClicked(e) {
             const cellIndex = e.target.getAttribute('data-index');
             if (options[cellIndex] !== '' || !running) return;
             
+            setSelectsDisabled(true);
             updateCell(e.target, cellIndex);
             checkWinner();
 
@@ -490,6 +509,7 @@
 
         function startNextRound() {
             currentRound++;
+            startingPlayer = startingPlayer === 'X' ? 'O' : 'X';
             btnNext.style.display = 'none';
             btnReset.style.display = 'inline-block';
             resetBoard();
@@ -497,17 +517,30 @@
 
         function resetBoard() {
             options = ['', '', '', '', '', '', '', '', ''];
-            currentPlayer = 'X';
+            currentPlayer = startingPlayer;
             winLine.style.opacity = '0';
             cells.forEach(cell => cell.textContent = '');
             updateUI();
             running = true;
+
+            if (modeSelect.value === 'cpu' && currentPlayer === 'O') {
+                running = false;
+                statusText.textContent = "COMPUTADOR PENSANDO...";
+                setTimeout(cpuMove, 500);
+            }
         }
 
         function fullReset() {
             winsX = 0;
             winsO = 0;
             currentRound = 1;
+            matchStartingPlayer = firstPlayerSelect.value;
+            startingPlayer = matchStartingPlayer;
+            
+            let nomeO = modeSelect.value === 'cpu' ? "Computador" : "Jogador O";
+            firstPlayerSelect.options[1].textContent = `Começa: ${nomeO}`;
+
+            setSelectsDisabled(false);
             btnNext.style.display = 'none';
             btnReset.style.display = 'inline-block';
             resetBoard();
@@ -522,7 +555,9 @@
             scoreXText.textContent = winsX;
             scoreOText.textContent = winsO;
             roundText.textContent = formatSelect.value === 'bo3' ? `${currentRound}/3` : `1/1`;
-            statusText.textContent = `VEZ DO JOGADOR X`;
+            let nomeO = modeSelect.value === 'cpu' ? "Computador" : "Jogador O";
+            let nomeAtual = currentPlayer === 'X' ? "Jogador X" : nomeO;
+            statusText.textContent = `VEZ DO ${nomeAtual}`;
         }
 
         function updateScoreUI() {
